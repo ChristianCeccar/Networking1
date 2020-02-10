@@ -1,9 +1,9 @@
-// UDP Client
+///// UDP Server
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <stdio.h>
+#include <utility>
 #include <string>
-#include <iostream>
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -20,9 +20,7 @@ int main() {
 		return 1;
 	}
 
-
-
-	//Create a client socket
+	//Create a Server socket
 
 	struct addrinfo* ptr = NULL, hints;
 
@@ -30,64 +28,68 @@ int main() {
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_DGRAM;
 	hints.ai_protocol = IPPROTO_UDP;
+	hints.ai_flags = AI_PASSIVE;
 
-	if (getaddrinfo("10.190.31.203", "8888", &hints, &ptr) != 0) {
+	if (getaddrinfo(NULL, "8888", &hints, &ptr) != 0) {
 		printf("Getaddrinfo failed!! %d\n", WSAGetLastError());
 		WSACleanup();
 		return 1;
 	}
 
-	SOCKET cli_socket;
+	SOCKET server_socket;
 
-	cli_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	server_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
-	if (cli_socket == INVALID_SOCKET) {
+	if (server_socket == INVALID_SOCKET) {
 		printf("Failed creating a socket %d\n", WSAGetLastError());
 		WSACleanup();
 		return 1;
 	}
 
+	// Bind socket
 
-
-	const unsigned int BUF_LEN = 512;
-
-	char send_buf[BUF_LEN];
-	memset(send_buf, 0, BUF_LEN);
-
-	for (;;) {
-		printf("Enter message: ");
-		std::string line;
-		std::getline(std::cin, line);
-		line += "\n";
-		char* message = (char*)line.c_str();
-
-		// send msg to server
-
-		if (sendto(cli_socket, message, BUF_LEN, 0,
-			ptr->ai_addr, ptr->ai_addrlen) == SOCKET_ERROR) {
-			printf("sendto() failed %d\n", WSAGetLastError());
-			return 1;
-		}
-
-		printf("Message sent...\n");
-
-
-	}
-
-
-	//Shutdown the socket
-
-	if (shutdown(cli_socket, SD_BOTH) == SOCKET_ERROR) {
-		printf("Shutdown failed!  %d\n", WSAGetLastError());
-		closesocket(cli_socket);
+	if (bind(server_socket, ptr->ai_addr, (int)ptr->ai_addrlen) == SOCKET_ERROR) {
+		printf("Bind failed: %d\n", WSAGetLastError());
+		closesocket(server_socket);
+		freeaddrinfo(ptr);
 		WSACleanup();
 		return 1;
 	}
 
-	closesocket(cli_socket);
+	printf("Waiting for Data...\n");
+
+	// Receive msg from client
+	const unsigned int BUF_LEN = 512;
+
+	char recv_buf[BUF_LEN];
+	char ipBuff[BUF_LEN];
+
+	// Struct that will hold the IP address of the client that sent the message (we don't have accept() anymore to learn the address)
+	struct sockaddr_in fromAddr;
+	char *IPAdd;
+	int fromlen;
+	fromlen = sizeof(fromAddr);
+	
+	for (;;) {
+		memset(recv_buf, 0, BUF_LEN);
+		if (recvfrom(server_socket, recv_buf, sizeof(recv_buf), 0, (struct sockaddr*) & fromAddr, &fromlen) == SOCKET_ERROR) {
+			printf("recvfrom() failed...%d\n", WSAGetLastError());
+			return 1;
+		}
+
+		std::string ip = inet_ntop(fromAddr.sin_family, &fromAddr, ipBuff, sizeof(ipBuff));
+
+		printf("IP: %s ", ip.c_str());
+		printf("Received: %s\n", recv_buf);
+
+		char ipbuf[INET_ADDRSTRLEN];
+		//		printf("Dest IP address: %s\n", inet_ntop(AF_INET, &fromAddr, ipbuf, sizeof(ipbuf)));
+		//		printf("Source IP address: %s\n", inet_ntop(AF_INET, &fromAddr, ipbuf, sizeof(ipbuf)));
+
+	}
+	closesocket(server_socket);
 	freeaddrinfo(ptr);
 	WSACleanup();
 
 	return 0;
-
 }
