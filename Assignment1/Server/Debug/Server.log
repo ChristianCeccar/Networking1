@@ -1,4 +1,4 @@
 ﻿  Source.cpp
-C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Source.cpp(71,8): warning C4101: 'IPAdd': unreferenced local variable
-C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Source.cpp(87,8): warning C4101: 'ipbuf': unreferenced local variable
+C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Source.cpp(78,8): warning C4101: 'IPAdd': unreferenced local variable
+C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Source.cpp(100,8): warning C4101: 'ipbuf': unreferenced local variable
   Server.vcxproj -> C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Debug\Server.exe

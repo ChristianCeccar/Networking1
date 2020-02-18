@@ -4,11 +4,20 @@
 #include <stdio.h>
 #include <utility>
 #include <string>
+#include <thread>
 
 #pragma comment(lib, "Ws2_32.lib")
+int multiThreading();
 
 int main() {
 
+
+	std::thread multiThread(multiThreading);
+	multiThread.join();
+	return 0;
+}
+
+int multiThreading() {
 	//Initialize winsock
 	WSADATA wsa;
 
@@ -66,10 +75,16 @@ int main() {
 
 	// Struct that will hold the IP address of the client that sent the message (we don't have accept() anymore to learn the address)
 	struct sockaddr_in fromAddr;
-	char *IPAdd;
+	char* IPAdd;
 	int fromlen;
 	fromlen = sizeof(fromAddr);
-	
+
+	if (recvfrom(server_socket, recv_buf, sizeof(recv_buf), 0, (struct sockaddr*) & fromAddr, &fromlen) == SOCKET_ERROR) {
+		printf("recvfrom() failed...%d\n", WSAGetLastError());
+	}
+
+	printf("%s Has joined\n", recv_buf);
+
 	for (;;) {
 		memset(recv_buf, 0, BUF_LEN);
 		if (recvfrom(server_socket, recv_buf, sizeof(recv_buf), 0, (struct sockaddr*) & fromAddr, &fromlen) == SOCKET_ERROR) {
@@ -90,6 +105,5 @@ int main() {
 	closesocket(server_socket);
 	freeaddrinfo(ptr);
 	WSACleanup();
-
 	return 0;
 }
