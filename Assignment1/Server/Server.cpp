@@ -33,6 +33,7 @@ int multiThreading() {
 	//Create a Server socket
 
 	struct addrinfo* ptr = NULL, hints;
+	struct addrinfo* send_toc = NULL, h;
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_INET;
@@ -40,17 +41,33 @@ int multiThreading() {
 	hints.ai_protocol = IPPROTO_UDP;
 	hints.ai_flags = AI_PASSIVE;
 
+	memset(&h, 0, sizeof(h));
+	h.ai_family = AF_INET;
+	h.ai_socktype = SOCK_DGRAM;
+	h.ai_protocol = IPPROTO_UDP;
+
 	if (getaddrinfo(NULL, "8888", &hints, &ptr) != 0) {
 		printf("Getaddrinfo failed!! %d\n", WSAGetLastError());
 		WSACleanup();
 		return 1;
 	}
 
+	
+
 	SOCKET server_socket;
+	SOCKET send_to;
 
 	server_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
+	send_to = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
 	if (server_socket == INVALID_SOCKET) {
+		printf("Failed creating a socket %d\n", WSAGetLastError());
+		WSACleanup();
+		return 1;
+	}
+
+	if (send_to == INVALID_SOCKET) {
 		printf("Failed creating a socket %d\n", WSAGetLastError());
 		WSACleanup();
 		return 1;
@@ -66,6 +83,7 @@ int multiThreading() {
 		return 1;
 	}
 
+	
 	printf("Waiting for Data...\n");
 
 	// Receive msg from client
@@ -76,16 +94,17 @@ int multiThreading() {
 
 	// Struct that will hold the IP address of the client that sent the message (we don't have accept() anymore to learn the address)
 	struct sockaddr_in fromAddr;
-	char* IPAdd;
 	int fromlen;
 	fromlen = sizeof(fromAddr);
+
+	
+
 	/*First is IP second pair is first username second status <IP, <Username, Status>> */
 	std::vector<std::pair<std::string, std::pair<std::string, std::string>>> ipUsernameStatus;
 
 	for (;;) {
 
 		GetLocalTime(&stime);
-
 		memset(recv_buf, 0, BUF_LEN);
 		if (recvfrom(server_socket, recv_buf, sizeof(recv_buf), 0, (struct sockaddr*) & fromAddr, &fromlen) == SOCKET_ERROR) {
 			printf("recvfrom() failed...%d\n", WSAGetLastError());
@@ -100,13 +119,26 @@ int multiThreading() {
 			ipUsernameStatus.push_back(std::make_pair<std::string, std::pair<std::string, std::string>>(ip.c_str(), std::make_pair<std::string, std::string>(recv_buf, "Online")));
 		}
 		else if (recv_buf[0] == '!'){
-			if (std::strstr(recv_buf, "!status")){
+			if (std::strstr(recv_buf, "!status")) {
+				int temp = -1;
 				std::string tempList = "Connected users(status):\n";
-				for (int i = 0; i < ipUsernameStatus.size(); i++){
+				for (int i = 0; i < ipUsernameStatus.size(); i++) {
 					tempList.append(ipUsernameStatus[i].second.first + "(" + ipUsernameStatus[i].second.second + ")\n");
+					temp = i;
 				}
-				printf(tempList.c_str());
-				//sendto(server_socket, tempList.c_str(), BUF_LEN, 0, (sockaddr*)&fromAddr, fromlen); //send message to client
+				if (temp != -1) {
+
+
+					if (getaddrinfo(ip.c_str(), "8888", &h, &send_toc) != 0) {
+						printf("Getaddrinfo failed!! %d\n", WSAGetLastError());
+						WSACleanup();
+						return 1;
+					}
+
+					
+					printf(tempList.c_str());
+					sendto(send_to, tempList.c_str(), BUF_LEN, 0, (struct sockaddr*) & fromAddr, fromlen); //send message to client
+				}
 			}
 			
 			if (std::strstr(recv_buf, "!connect ") != nullptr){

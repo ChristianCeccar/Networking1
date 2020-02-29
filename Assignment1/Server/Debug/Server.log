@@ -1,7 +1,6 @@
 ﻿  Server.cpp
-C:\Users\Hugo\Downloads\Repo\Networking1\Assignment1\Server\Server.cpp(105,23): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Hugo\Downloads\Repo\Networking1\Assignment1\Server\Server.cpp(113,23): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Hugo\Downloads\Repo\Networking1\Assignment1\Server\Server.cpp(123,22): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Hugo\Downloads\Repo\Networking1\Assignment1\Server\Server.cpp(79,8): warning C4101: 'IPAdd': unreferenced local variable
-C:\Users\Hugo\Downloads\Repo\Networking1\Assignment1\Server\Server.cpp(138,8): warning C4101: 'ipbuf': unreferenced local variable
-  Server.vcxproj -> C:\Users\Hugo\Downloads\Repo\Networking1\Assignment1\Debug\Server.exe
+C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(125,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(145,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(155,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(170,8): warning C4101: 'ipbuf': unreferenced local variable
+  Server.vcxproj -> C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Debug\Server.exe

@@ -4,11 +4,19 @@
 #include <stdio.h>
 #include <string>
 #include <iostream>
+#include <thread>
 
 #pragma comment(lib, "Ws2_32.lib")
 
-int main() {
+int recieveBack();
 
+int main() {
+	std::thread first(recieveBack);
+	first.join();
+	return 0;
+}
+
+int recieveBack() {
 	//Initialize winsock
 	WSADATA wsa;
 
@@ -39,7 +47,7 @@ int main() {
 		WSACleanup();
 		return 1;
 	}
-		
+
 
 	SOCKET cli_socket;
 
@@ -54,9 +62,18 @@ int main() {
 		printf("Connected\n");
 	}
 
+	if (bind(cli_socket, ptr->ai_addr, (int)ptr->ai_addrlen) == SOCKET_ERROR) {
+		printf("Bind failed: %d\n", WSAGetLastError());
+		closesocket(cli_socket);
+		freeaddrinfo(ptr);
+		WSACleanup();
+		return 1;
+	}
+
 	const unsigned int BUF_LEN = 512;
 
 	char send_buf[BUF_LEN];
+	char recv_buf[BUF_LEN];
 	memset(send_buf, 0, BUF_LEN);
 
 	printf("\nEnter username: \n");
@@ -65,11 +82,15 @@ int main() {
 
 	userName = "@" + userName;
 
-	if (sendto(cli_socket, (char*) userName.c_str(), BUF_LEN, 0,
+	if (sendto(cli_socket, (char*)userName.c_str(), BUF_LEN, 0,
 		ptr->ai_addr, ptr->ai_addrlen) == SOCKET_ERROR) {
 		printf("sendto() failed %d\n", WSAGetLastError());
 		return 1;
 	}
+
+	struct sockaddr_in fromAddr;
+	int fromlen;
+	fromlen = sizeof(fromAddr);
 
 	for (;;) {
 		printf("Enter message: ");
@@ -88,6 +109,11 @@ int main() {
 
 		printf("Message sent...\n");
 
+		memset(recv_buf, 0, BUF_LEN);
+		if (recvfrom(cli_socket, recv_buf, sizeof(recv_buf), 0, ptr->ai_addr, &fromlen) == SOCKET_ERROR) {
+			printf("recvfrom() failed...%d\n", WSAGetLastError());
+			return 1;
+		}
 
 	}
 
