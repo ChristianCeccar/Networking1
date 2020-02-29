@@ -38,6 +38,8 @@ int recieveBack() {
 	hints.ai_socktype = SOCK_DGRAM;
 	hints.ai_protocol = IPPROTO_UDP;
 
+	
+
 	std::string ipAdd;
 	printf("Please enter IP Address: \n");
 	std::getline(std::cin, ipAdd);
@@ -48,9 +50,10 @@ int recieveBack() {
 		return 1;
 	}
 
+	
+
 
 	SOCKET cli_socket;
-
 	cli_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 	if (cli_socket == INVALID_SOCKET) {
@@ -62,18 +65,12 @@ int recieveBack() {
 		printf("Connected\n");
 	}
 
-	if (bind(cli_socket, ptr->ai_addr, (int)ptr->ai_addrlen) == SOCKET_ERROR) {
-		printf("Bind failed: %d\n", WSAGetLastError());
-		closesocket(cli_socket);
-		freeaddrinfo(ptr);
-		WSACleanup();
-		return 1;
-	}
 
 	const unsigned int BUF_LEN = 512;
 
 	char send_buf[BUF_LEN];
 	char recv_buf[BUF_LEN];
+
 	memset(send_buf, 0, BUF_LEN);
 
 	printf("\nEnter username: \n");
@@ -92,6 +89,13 @@ int recieveBack() {
 	int fromlen;
 	fromlen = sizeof(fromAddr);
 
+	memset((char*) &fromAddr, 0, sizeof(fromAddr));
+	fromAddr.sin_family = AF_INET;
+	fromAddr.sin_port = htons(8888);
+	fromAddr.sin_addr.S_un.S_addr = inet_addr(ipAdd.c_str());
+
+	u_long mode = 1;// 0 for blocking mode
+	ioctlsocket(cli_socket, FIONBIO, &mode);
 	for (;;) {
 		printf("Enter message: ");
 		std::string line;
@@ -109,12 +113,10 @@ int recieveBack() {
 
 		printf("Message sent...\n");
 
-		memset(recv_buf, 0, BUF_LEN);
-		if (recvfrom(cli_socket, recv_buf, sizeof(recv_buf), 0, ptr->ai_addr, &fromlen) == SOCKET_ERROR) {
-			printf("recvfrom() failed...%d\n", WSAGetLastError());
-			return 1;
-		}
 
+		memset(recv_buf, 0, BUF_LEN);
+		recvfrom(cli_socket, recv_buf, BUF_LEN, 0, (sockaddr*) &fromAddr, &fromlen);
+		printf(recv_buf);
 	}
 
 

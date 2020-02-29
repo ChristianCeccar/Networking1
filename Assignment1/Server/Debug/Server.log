@@ -1,6 +1,7 @@
 ﻿  Server.cpp
-C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(125,23): warning C4018: '<': signed/unsigned mismatch
-C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(145,23): warning C4018: '<': signed/unsigned mismatch
-C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(155,22): warning C4018: '<': signed/unsigned mismatch
-C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(170,8): warning C4101: 'ipbuf': unreferenced local variable
+C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(122,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(137,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(147,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(74,15): warning C4101: 'recvLen': unreferenced local variable
+C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(162,8): warning C4101: 'ipbuf': unreferenced local variable
   Server.vcxproj -> C:\Users\check\OneDrive\Desktop\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Debug\Server.exe

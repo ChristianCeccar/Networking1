@@ -33,7 +33,6 @@ int multiThreading() {
 	//Create a Server socket
 
 	struct addrinfo* ptr = NULL, hints;
-	struct addrinfo* send_toc = NULL, h;
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_INET;
@@ -41,10 +40,6 @@ int multiThreading() {
 	hints.ai_protocol = IPPROTO_UDP;
 	hints.ai_flags = AI_PASSIVE;
 
-	memset(&h, 0, sizeof(h));
-	h.ai_family = AF_INET;
-	h.ai_socktype = SOCK_DGRAM;
-	h.ai_protocol = IPPROTO_UDP;
 
 	if (getaddrinfo(NULL, "8888", &hints, &ptr) != 0) {
 		printf("Getaddrinfo failed!! %d\n", WSAGetLastError());
@@ -55,11 +50,9 @@ int multiThreading() {
 	
 
 	SOCKET server_socket;
-	SOCKET send_to;
 
 	server_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
-	send_to = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 	if (server_socket == INVALID_SOCKET) {
 		printf("Failed creating a socket %d\n", WSAGetLastError());
@@ -67,37 +60,41 @@ int multiThreading() {
 		return 1;
 	}
 
-	if (send_to == INVALID_SOCKET) {
-		printf("Failed creating a socket %d\n", WSAGetLastError());
-		WSACleanup();
-		return 1;
-	}
+	
 
 	// Bind socket
 
-	if (bind(server_socket, ptr->ai_addr, (int)ptr->ai_addrlen) == SOCKET_ERROR) {
-		printf("Bind failed: %d\n", WSAGetLastError());
-		closesocket(server_socket);
-		freeaddrinfo(ptr);
-		WSACleanup();
-		return 1;
-	}
+	
 
 	
 	printf("Waiting for Data...\n");
 
 	// Receive msg from client
 	const unsigned int BUF_LEN = 512;
-
+	int sendLen, recvLen;
 	char recv_buf[BUF_LEN];
 	char ipBuff[BUF_LEN];
 
+	
+
 	// Struct that will hold the IP address of the client that sent the message (we don't have accept() anymore to learn the address)
-	struct sockaddr_in fromAddr;
+	struct sockaddr_in fromAddr, toAddr;
 	int fromlen;
 	fromlen = sizeof(fromAddr);
 
-	
+	sendLen = sizeof(toAddr);
+
+	toAddr.sin_family = AF_INET;
+	toAddr.sin_addr.s_addr = INADDR_ANY;
+	toAddr.sin_port = htons(8888);
+
+	if (bind(server_socket, ptr->ai_addr, sizeof(fromAddr)) == SOCKET_ERROR) {
+		printf("Bind failed: %d\n", WSAGetLastError());
+		closesocket(server_socket);
+		freeaddrinfo(ptr);
+		WSACleanup();
+		return 1;
+	}
 
 	/*First is IP second pair is first username second status <IP, <Username, Status>> */
 	std::vector<std::pair<std::string, std::pair<std::string, std::string>>> ipUsernameStatus;
@@ -127,17 +124,12 @@ int multiThreading() {
 					temp = i;
 				}
 				if (temp != -1) {
-
-
-					if (getaddrinfo(ip.c_str(), "8888", &h, &send_toc) != 0) {
-						printf("Getaddrinfo failed!! %d\n", WSAGetLastError());
-						WSACleanup();
-						return 1;
-					}
-
-					
+					std::string ipTest = "99.249.19.58";
+					toAddr.sin_addr.S_un.S_addr = inet_addr(ipTest.c_str());
 					printf(tempList.c_str());
-					sendto(send_to, tempList.c_str(), BUF_LEN, 0, (struct sockaddr*) & fromAddr, fromlen); //send message to client
+					sendto(server_socket, tempList.c_str(), BUF_LEN, 0, ptr->ai_addr, sendLen);
+
+					//sendto(send_to, tempList.c_str(), BUF_LEN, 0, (struct sockaddr*) & fromAddr, fromlen); //send message to client
 				}
 			}
 			
