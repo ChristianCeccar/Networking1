@@ -1,5 +1,7 @@
 ﻿  Server.cpp
-C:\Users\Christian\Desktop\All\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(108,22): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Christian\Desktop\All\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(79,8): warning C4101: 'IPAdd': unreferenced local variable
-C:\Users\Christian\Desktop\All\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Server\Server.cpp(123,8): warning C4101: 'ipbuf': unreferenced local variable
-  Server.vcxproj -> C:\Users\Christian\Desktop\All\School\Year 4 Semester 2\Networking\A1\Networking1\Assignment1\Debug\Server.exe
+C:\Users\Hugo\Downloads\Repo\Networking1\Assignment1\Server\Server.cpp(105,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Hugo\Downloads\Repo\Networking1\Assignment1\Server\Server.cpp(113,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Hugo\Downloads\Repo\Networking1\Assignment1\Server\Server.cpp(123,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Hugo\Downloads\Repo\Networking1\Assignment1\Server\Server.cpp(79,8): warning C4101: 'IPAdd': unreferenced local variable
+C:\Users\Hugo\Downloads\Repo\Networking1\Assignment1\Server\Server.cpp(138,8): warning C4101: 'ipbuf': unreferenced local variable
+  Server.vcxproj -> C:\Users\Hugo\Downloads\Repo\Networking1\Assignment1\Debug\Server.exe

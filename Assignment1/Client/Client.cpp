@@ -9,7 +9,6 @@
 
 int main() {
 
-
 	//Initialize winsock
 	WSADATA wsa;
 
@@ -20,9 +19,6 @@ int main() {
 		printf("Failed to initialize %d\n", error);
 		return 1;
 	}
-
-	
-
 
 
 	//Create a client socket
@@ -43,9 +39,7 @@ int main() {
 		WSACleanup();
 		return 1;
 	}
-	
-
-	
+		
 
 	SOCKET cli_socket;
 

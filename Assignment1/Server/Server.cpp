@@ -79,10 +79,8 @@ int multiThreading() {
 	char* IPAdd;
 	int fromlen;
 	fromlen = sizeof(fromAddr);
-	/*first is IP second is username*/
-	std::vector<std::pair<std::string, std::string>> ipUsername;
-
-
+	/*First is IP second pair is first username second status <IP, <Username, Status>> */
+	std::vector<std::pair<std::string, std::pair<std::string, std::string>>> ipUsernameStatus;
 
 	for (;;) {
 
@@ -99,14 +97,31 @@ int multiThreading() {
 		if (recv_buf[0] == '@') {
 			
 			printf("%s Has joined\n", recv_buf);
-			ipUsername.push_back(std::make_pair<std::string, std::string>(ip.c_str() ,recv_buf));
-
+			ipUsernameStatus.push_back(std::make_pair<std::string, std::pair<std::string, std::string>>(ip.c_str(), std::make_pair<std::string, std::string>(recv_buf, "Online")));
+		}
+		else if (recv_buf[0] == '!'){
+			if (std::strstr(recv_buf, "!status")){
+				std::string tempList = "Connected users(status):\n";
+				for (int i = 0; i < ipUsernameStatus.size(); i++){
+					tempList.append(ipUsernameStatus[i].second.first + "(" + ipUsernameStatus[i].second.second + ")\n");
+				}
+				printf(tempList.c_str());
+				//sendto(server_socket, tempList.c_str(), BUF_LEN, 0, (sockaddr*)&fromAddr, fromlen); //send message to client
+			}
+			
+			if (std::strstr(recv_buf, "!connect ") != nullptr){
+				for (int i = 0; i < ipUsernameStatus.size(); i++) {
+					if (std::strstr(recv_buf, ipUsernameStatus[i].second.first.c_str()) != nullptr) {
+						// Connect both clients to chat, exchange data, and change their status to busy
+					}
+				}
+			}
 		}
 		else {
 			int index = -1;
 
-			for (int i = 0; i < ipUsername.size(); i++) {
-				if (ipUsername[i].first == ip.c_str()) {
+			for (int i = 0; i < ipUsernameStatus.size(); i++) {
+				if (ipUsernameStatus[i].first == ip.c_str()) {
 					index = i;
 					break;
 				}
@@ -115,7 +130,7 @@ int multiThreading() {
 			if (index >= 0) {
 
 				printf("(%02d:%02d) ", stime.wHour, stime.wMinute);
-				printf("%s: ", ipUsername[index].second.c_str());
+				printf("%s: ", ipUsernameStatus[index].second.first.c_str());
 				printf("%s \n", recv_buf);
 			}
 		}
