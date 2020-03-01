@@ -4,56 +4,49 @@
 #include <stdio.h>
 #include <string>
 #include <iostream>
-#include <thread>
 
 #pragma comment(lib, "Ws2_32.lib")
 
-int recieveBack();
-
-int main() {
-	std::thread first(recieveBack);
-	first.join();
-	return 0;
-}
-
-int recieveBack() {
+int main() 
+{
 	//Initialize winsock
 	WSADATA wsa;
 
 	int error;
 	error = WSAStartup(MAKEWORD(2, 2), &wsa);
 
-	if (error != 0) {
+	if (error != 0) 
+	{
 		printf("Failed to initialize %d\n", error);
 		return 1;
 	}
 
-
 	//Create a client socket
-
 	struct addrinfo* ptr = NULL, hints;
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_DGRAM;
 	hints.ai_protocol = IPPROTO_UDP;
-
 	
-
 	std::string ipAdd;
-	printf("Please enter IP Address: \n");
+	printf("Enter server's IP Address: ");
 	std::getline(std::cin, ipAdd);
+	printf("\n");
 
-	if (getaddrinfo(ipAdd.c_str(), "8888", &hints, &ptr) != 0) {
+	if (getaddrinfo(ipAdd.c_str(), "8888", &hints, &ptr) != 0) 
+	{
 		printf("Getaddrinfo failed!! %d\n", WSAGetLastError());
 		WSACleanup();
 		return 1;
 	}
-
+	else
+	{
+		printf("IP found.\n");
+	}
 	
-
-
 	SOCKET cli_socket;
+
 	cli_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 	if (cli_socket == INVALID_SOCKET) {
@@ -62,25 +55,21 @@ int recieveBack() {
 		return 1;
 	}
 	else {
-		printf("Connected\n");
+		printf("Socket created successfully\n");
 	}
-
-
+	
 	const unsigned int BUF_LEN = 512;
 
-	char send_buf[BUF_LEN];
 	char recv_buf[BUF_LEN];
 
-	memset(send_buf, 0, BUF_LEN);
-
-	printf("\nEnter username: \n");
+	printf("\nEnter username: ");
 	std::string userName;
 	std::getline(std::cin, userName);
 
 	userName = "@" + userName;
 
-	if (sendto(cli_socket, (char*)userName.c_str(), BUF_LEN, 0,
-		ptr->ai_addr, ptr->ai_addrlen) == SOCKET_ERROR) {
+	if (sendto(cli_socket, (char*)userName.c_str(), BUF_LEN, 0,	ptr->ai_addr, ptr->ai_addrlen) == SOCKET_ERROR)
+	{
 		printf("sendto() failed %d\n", WSAGetLastError());
 		return 1;
 	}
@@ -89,15 +78,13 @@ int recieveBack() {
 	int fromlen;
 	fromlen = sizeof(fromAddr);
 
-	memset((char*) &fromAddr, 0, sizeof(fromAddr));
-	fromAddr.sin_family = AF_INET;
-	fromAddr.sin_port = htons(8888);
-	fromAddr.sin_addr.S_un.S_addr = inet_addr(ipAdd.c_str());
-
 	u_long mode = 1;// 0 for blocking mode
 	ioctlsocket(cli_socket, FIONBIO, &mode);
-	for (;;) {
-		printf("Enter message: ");
+
+	printf("\nList of commands:\n !status - check the status of people in the server\n !connect to 'username' - connect to other users\n");
+	for (;;) 
+	{	
+		printf("\nEnter message: ");
 		std::string line;
 		std::getline(std::cin, line);
 		line += "\n";
@@ -105,20 +92,23 @@ int recieveBack() {
 
 		// send msg to server
 
-		if (sendto(cli_socket, message, BUF_LEN, 0,
-			ptr->ai_addr, ptr->ai_addrlen) == SOCKET_ERROR) {
+		if (sendto(cli_socket, message, BUF_LEN, 0,	ptr->ai_addr, ptr->ai_addrlen) == SOCKET_ERROR) 
+		{
 			printf("sendto() failed %d\n", WSAGetLastError());
 			return 1;
 		}
-
-		printf("Message sent...\n");
-
-
-		memset(recv_buf, 0, BUF_LEN);
-		recvfrom(cli_socket, recv_buf, BUF_LEN, 0, (sockaddr*) &fromAddr, &fromlen);
-		printf(recv_buf);
+		else
+		{
+			printf("Message sent...\n\n");
+		}
+		if (std::strstr(message, "!status") != nullptr)
+		{
+			Sleep(5);
+			memset(recv_buf, 0, BUF_LEN);
+			recv(cli_socket, recv_buf, BUF_LEN, 0);
+			printf(recv_buf);
+		}
 	}
-
 
 	//Shutdown the socket
 
