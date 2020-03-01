@@ -73,12 +73,7 @@ int serverSendRecv() {
 	const unsigned int BUF_LEN = 512;
 
 	//separate buffers for sending and receiving data from the server
-	//send_buf is just used for sending the user's alias/username to the
-	//server for human-readable identification later
-	char sendBuf[BUF_LEN];
 	char recvBuf[BUF_LEN];
-
-	memset(sendBuf, 0, BUF_LEN);
 
 	printf("\nEnter username: \n");
 	std::string userName;
@@ -86,8 +81,7 @@ int serverSendRecv() {
 
 	userName = "@" + userName; //appends an @ so the server can differentiate join messages from other messages
 
-	std::strcat(sendBuf, userName.c_str());
-	if (sendto(cli_sock, sendBuf, BUF_LEN, 0,
+	if (sendto(cli_sock, userName.c_str(), BUF_LEN, 0,
 		addrPtr->ai_addr, addrPtr->ai_addrlen) == SOCKET_ERROR) {
 		printf("sendto() failed %d\n", WSAGetLastError());
 		return 1;
